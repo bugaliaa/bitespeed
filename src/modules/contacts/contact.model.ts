@@ -21,7 +21,14 @@ export type CreateContactDTO = {
     linkedPrecedence?: LinkPrecedence | null
 }
 
-export type IdentifyRequest = {
+export interface IdentifyRequest {
     phoneNumber?: String | null,
     email?: String | null
+}
+
+export interface ContactResponse {
+    primaryContactId: number;
+    emails: string[];
+    phoneNumbers: string[];
+    secondaryContactIds: number[];
 }
