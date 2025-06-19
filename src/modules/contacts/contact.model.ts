@@ -13,3 +13,15 @@ export interface Contact {
     updatedAt: Date,
     deletedAt?: Date | null
 }
+
+export type CreateContactDTO = {
+    phoneNumber?: String | null,
+    email?: String | null,
+    linkedId?: number | null,
+    linkedPrecedence?: LinkPrecedence | null
+}
+
+export type IdentifyRequest = {
+    phoneNumber?: String | null,
+    email?: String | null
+}
