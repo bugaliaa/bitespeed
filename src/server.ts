@@ -1,3 +1,4 @@
+import 'tsconfig-paths/register';
 import app from './app';
 import { db } from './config/db';
 import { env } from './config/env';
