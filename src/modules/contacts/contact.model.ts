@@ -5,8 +5,8 @@ export enum LinkPrecedence {
 
 export interface Contact {
     id: number,
-    phoneNumber?: String | null,
-    email?: String | null
+    phoneNumber?: string | null,
+    email?: string | null
     linkedId?: number | null,
     linkedPrecedence?: LinkPrecedence | null,
     createdAt: Date,
@@ -14,16 +14,27 @@ export interface Contact {
     deletedAt?: Date | null
 }
 
+export interface RawContact {
+    id: number;
+    phone_number: string;
+    email: string;
+    linked_id?: number | null;
+    linked_precedence?: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
+}
+
 export type CreateContactDTO = {
-    phoneNumber?: String | null,
-    email?: String | null,
+    phoneNumber?: string | null,
+    email?: string | null,
     linkedId?: number | null,
     linkedPrecedence?: LinkPrecedence | null
 }
 
 export interface IdentifyRequest {
-    phoneNumber?: String | null,
-    email?: String | null
+    phoneNumber?: string | null,
+    email?: string | null
 }
 
 export interface ContactResponse {

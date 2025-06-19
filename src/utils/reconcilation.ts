@@ -1,35 +1,25 @@
 import { Contact, LinkPrecedence } from "@modules/contacts/contact.model";
+import { ContactRepository } from "@modules/contacts/contact.repository";
 
 export function findPrimaryContact(contacts: Contact[]): Contact {
-    const primaryContact = contacts.find(contact =>
-        contact.linkedPrecedence === LinkPrecedence.PRIMARY
+    const primary = contacts.find(c => c.linkedPrecedence === LinkPrecedence.PRIMARY);
+    if (primary) return primary;
+
+    return contacts.reduce((oldest, current) =>
+        current.createdAt < oldest.createdAt ? current : oldest
     );
-
-    if (primaryContact) {
-        return primaryContact;
-    }
-
-    const sortedContacts = [...contacts].sort(
-        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-    );
-
-    return sortedContacts[0];
 }
 
-export function shouldCreateNewContact(
-    existingContacts: Contact[],
-    email?: String | null,
-    phoneNumber?: String | null
-): boolean {
+export function shouldCreateNewContact(contacts: Contact[], email?: string | null, phoneNumber?: string | null): boolean {
+    if (!email && !phoneNumber) return false;
 
-    if (!email && !phoneNumber) {
-        return false;
-    }
+    const normalizedEmail = email ? String(email) : null;
+    const normalizedPhoneNumber = phoneNumber ? String(phoneNumber) : null;
 
-    const hasEmailMatch = email && existingContacts.some(contact => contact.email === email);
-    const hasPhoneMatch = phoneNumber && existingContacts.some(contact => contact.phoneNumber === phoneNumber);
+    const hasEmail = normalizedEmail && contacts.some(c => String(c.email) === normalizedEmail);
+    const hasPhone = normalizedPhoneNumber && contacts.some(c => String(c.phoneNumber) === normalizedPhoneNumber);
 
-    return !hasEmailMatch && !hasPhoneMatch;
+    return !(hasEmail && hasPhone);
 }
 
 export function findContactsToConvert(
@@ -42,13 +32,9 @@ export function findContactsToConvert(
     );
 }
 
-export async function convertToSecondary(
-    contact: Contact,
-    primaryId: number,
-    repository: any
-): Promise<void> {
-    await repository.updateContact(contact.id, {
-        linkedId: primaryId,
-        linkPrecedence: LinkPrecedence.SECONDARY
+export async function convertToSecondary(contact: Contact, primaryId: number, contactRepository: ContactRepository): Promise<void> {
+    await contactRepository.updateContact(contact.id, {
+        linked_id: primaryId,
+        linked_precedence: LinkPrecedence.SECONDARY
     });
 }

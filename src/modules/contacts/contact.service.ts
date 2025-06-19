@@ -1,5 +1,5 @@
 import { convertToSecondary, findContactsToConvert, findPrimaryContact, shouldCreateNewContact } from "utils/reconcilation";
-import { Contact, ContactResponse, CreateContactDTO, IdentifyRequest, LinkPrecedence } from "./contact.model";
+import { ContactResponse, IdentifyRequest, LinkPrecedence } from "./contact.model";
 import { ContactRepository } from "./contact.repository";
 
 
@@ -9,7 +9,8 @@ export class ContactService {
     async identify(request: IdentifyRequest): Promise<ContactResponse> {
         const { email, phoneNumber } = request;
 
-        const existingContacts = await this.contactRepository.findContactsByEmailOrPhone(email, phoneNumber);
+        const rawContacts = await this.contactRepository.findContactsByEmailOrPhone(email, phoneNumber);
+        const existingContacts = await this.contactRepository.mapRawToContactList(rawContacts);
 
         if (existingContacts.length === 0) {
             const newContact = await this.contactRepository.createContact({
@@ -25,12 +26,14 @@ export class ContactService {
         let primaryContact = findPrimaryContact(existingContacts);
 
         if (shouldCreateNewContact(existingContacts, email, phoneNumber)) {
-            const newContact = await this.contactRepository.createContact({
+            const newContactRaw = await this.contactRepository.createContact({
                 phoneNumber,
                 email,
                 linkedId: primaryContact.id,
                 linkedPrecedence: LinkPrecedence.SECONDARY
             });
+
+            const newContact = await this.contactRepository.mapRawToContact(newContactRaw);
 
             existingContacts.push(newContact);
         }
@@ -44,8 +47,8 @@ export class ContactService {
 
             for (const linkedContact of linkedContacts) {
                 await this.contactRepository.updateContact(linkedContact.id, {
-                    linkedId: primaryContact.id,
-                    linkedPrecedence: LinkPrecedence.SECONDARY
+                    linked_id: primaryContact.id,
+                    linked_precedence: LinkPrecedence.SECONDARY
                 });
             }
         }
@@ -54,23 +57,35 @@ export class ContactService {
     }
 
     private async formatResponse(primaryContactId: number): Promise<ContactResponse> {
+        const [primaryContact, secondaryContacts] = await Promise.all([
+            this.contactRepository.findContactById(primaryContactId),
+            this.contactRepository.findContactsByLinkedId(primaryContactId)
+        ]);
 
-        const primaryContact = await this.contactRepository.findContactById(primaryContactId);
         if (!primaryContact) {
             throw new Error("Primary contact not found");
         }
 
-        const secondaryContacts = await this.contactRepository.findContactsByLinkedId(primaryContactId);
-
-        const allContacts = [primaryContact, ...secondaryContacts];
-        const emails = Array.from(new Set(allContacts.map(c => c.email).filter(Boolean) as string[]));
-        const phoneNumbers = Array.from(new Set(allContacts.map(c => c.phoneNumber).filter(Boolean) as string[]));
+        const emails = this.collectOrderedValues(primaryContact.email, secondaryContacts.map(c => c.email));
+        const phoneNumbers = this.collectOrderedValues(primaryContact.phone_number, secondaryContacts.map(c => c.phone_number));
 
         return {
             primaryContactId: primaryContact.id,
             emails,
             phoneNumbers,
-            secondaryContactIds: secondaryContacts.map(c => c.id),
+            secondaryContactIds: secondaryContacts.map(c => c.id)
         };
+    }
+
+    private collectOrderedValues(primaryValue: string | null | undefined, secondaryValues: (string | null | undefined)[]): string[] {
+        const result = new Set<string>();
+
+        if (primaryValue) result.add(primaryValue);
+
+        secondaryValues.forEach(val => {
+            if (val) result.add(val);
+        });
+
+        return Array.from(result);
     }
 }
