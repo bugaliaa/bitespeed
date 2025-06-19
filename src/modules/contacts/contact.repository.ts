@@ -3,13 +3,13 @@ import { db } from "@config/db";
 
 export class ContactRepository {
     async findContactsByEmailOrPhone(
-        email?: string | null,
-        phoneNumber?: string | null
+        email?: String | null,
+        phoneNumber?: String | null
     ): Promise<Contact[]> {
 
         let query = "SELECT * FROM contacts WHERE deleted_at IS NULL AND (";
-        const values: (string | undefined)[] = [];
-        const conditions: string[] = [];
+        const values: (String | undefined)[] = [];
+        const conditions: String[] = [];
 
         if (!email && !phoneNumber) {
             throw new Error("At least one of email or phoneNumber must be provided");
