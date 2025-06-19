@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --exec \"ts-node -r tsconfig-paths/register src/server.ts\"",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node -r dotenv/config dist/server.js",
     "migrate:create": "pg-migrate create",
     "migrate:up": "pg-migrate up"
   },
@@ -15,6 +15,7 @@
   "description": "",
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/module-alias": "^2.0.4",
     "@types/node": "^24.0.3",
     "@types/pg": "^8.15.4",
     "node-pg-migrate": "^8.0.3",
@@ -27,7 +28,9 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "module-alias": "^2.2.3",
     "pg": "^8.16.1",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.67"
   }
 }

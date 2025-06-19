@@ -1,6 +1,6 @@
-import { errorHandler } from '@shared/errors/errorHandler';
+import { errorHandler } from './shared/errors/errorHandler';
 import express, { NextFunction, Request, Response } from 'express';
-import router from '@modules/contacts/contact.routes';
+import router from './modules/contacts/contact.routes';
 
 const app = express();
 

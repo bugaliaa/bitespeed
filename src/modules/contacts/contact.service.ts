@@ -1,4 +1,4 @@
-import { convertToSecondary, findContactsToConvert, findPrimaryContact, shouldCreateNewContact } from "utils/reconcilation";
+import { convertToSecondary, findContactsToConvert, findPrimaryContact, shouldCreateNewContact } from "../../utils/reconcilation";
 import { ContactResponse, IdentifyRequest, LinkPrecedence } from "./contact.model";
 import { ContactRepository } from "./contact.repository";
 

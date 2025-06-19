@@ -8,12 +8,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "baseUrl": "./src",
-    "paths": {
-      "@config/*": ["config/*"],
-      "@modules/*": ["modules/*"],
-      "@shared/*": ["shared/*"]
-    },
+    // "baseUrl": "./src",
+    // "paths": {
+    //   "@config/*": ["config/*"],
+    //   "@modules/*": ["modules/*"],
+    //   "@shared/*": ["shared/*"]
+    // },
     "types": ["node"]
   },
   "include": ["src/**/*"],

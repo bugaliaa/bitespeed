@@ -1,5 +1,5 @@
-import { db } from "@config/db";
-import { Contact, CreateContactDTO, LinkPrecedence, RawContact } from "@modules/contacts/contact.model";
+import { db } from "../../config/db";
+import { Contact, CreateContactDTO, LinkPrecedence, RawContact } from "./contact.model";
 
 export class ContactRepository {
     async findContactsByEmailOrPhone(

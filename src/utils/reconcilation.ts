@@ -1,5 +1,5 @@
-import { Contact, LinkPrecedence } from "@modules/contacts/contact.model";
-import { ContactRepository } from "@modules/contacts/contact.repository";
+import { Contact, LinkPrecedence } from "../modules/contacts/contact.model";
+import { ContactRepository } from "../modules/contacts/contact.repository";
 
 export function findPrimaryContact(contacts: Contact[]): Contact {
     const primary = contacts.find(c => c.linkedPrecedence === LinkPrecedence.PRIMARY);
